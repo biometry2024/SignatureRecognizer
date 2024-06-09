@@ -5,7 +5,7 @@ import torch.nn as nn
 class CedarNetwork(nn.Module):
     def __init__(self):
         super(CedarNetwork, self).__init__()
-        
+
         self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
