@@ -1,12 +1,14 @@
+from torchvision import transforms
 import torch
-from torch.utils.data import Dataset, random_split, DataLoader
+from torch.utils.data import Dataset
 from PIL import Image, UnidentifiedImageError
 import os
 
+
 class CedarDataset(Dataset):
-    def __init__(self, root_dir, transform=None):
+    def __init__(self, root_dir):
         self.root_dir = root_dir
-        self.transform = transform
+        self.transform = self.get_transform()
         self.image_paths = []
         self.labels = []
 
@@ -34,7 +36,6 @@ class CedarDataset(Dataset):
         try:
             image = Image.open(img_path).convert("L")  # Convert to grayscale
         except UnidentifiedImageError:
-            # In case an image cannot be opened, you can handle it here
             print(f"Cannot identify image file {img_path}")
             return None, None
 
@@ -45,9 +46,15 @@ class CedarDataset(Dataset):
 
         return image, torch.tensor(label, dtype=torch.float32)
 
-    def is_image_file(self, file_path):
+    def is_image_file(self, file_path) -> bool:
         try:
             Image.open(file_path).verify()
             return True
         except (IOError, UnidentifiedImageError):
             return False
+
+    @staticmethod
+    def get_transform() -> transforms.Compose:
+        return transforms.Compose(
+            [transforms.Resize((150, 220)), transforms.ToTensor()]
+        )
