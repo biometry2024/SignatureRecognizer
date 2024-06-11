@@ -68,12 +68,15 @@ def train(model: CedarNetwork = None) -> CedarNetwork:
         torch.save(model.state_dict(), f"model_weights.pth{epoch}")
 
         # early stopping
-        if val_loss < lowest_val_loss:
+        if accuracy >= 99.99:
+            print("Early stopping triggered")
+            break
+        elif val_loss < lowest_val_loss:
             lowest_val_loss = val_loss
             epochs_without_improvement = 0
         else:
             epochs_without_improvement += 1
-            if epochs_without_improvement >= patience or accuracy >= 99.5:
+            if epochs_without_improvement >= patience:
                 print("Early stopping triggered")
                 break
 
