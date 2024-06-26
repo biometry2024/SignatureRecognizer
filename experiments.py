@@ -1,10 +1,13 @@
 import numpy as np
 import torch
-import torch.nn as nn
-from torch.utils.data import random_split, DataLoader
+from torch.utils.data import DataLoader
 from torchvision import transforms
-from datasets import CedarDataset
+from datasets import CedarDataset, TestDataset
 from sklearn.metrics import precision_score, recall_score, f1_score
+
+from main import load_model
+from networks import Cedar, VGG16, ResNet
+from train import train_model, split_dataset, create_DataLoaders
 
 
 def experiments():
@@ -12,10 +15,16 @@ def experiments():
         option = input()
         match option:
             case "1":
-                _, _, _, = compare()
                 print("Comparing models")
+                compare()
             case "2":
                 print("Test model")
+                model = load_model()
+                if model != None:
+                    model_tester(model)
+                else:
+                    print("No model exists - cannot retrain")
+
             case "3":
                 print("Evaluate model")
             case "0":
@@ -25,17 +34,35 @@ def experiments():
 
 
 def compare():
-    vgg16_accuracy = 0
-    resnet_accuracy = 0
-    cedar_accuracy = 0
+    full_dataset = CedarDataset(root_dir="signatures")
+    test_dataset = TestDataset(root_dir="signatures")
 
-    return vgg16_accuracy, resnet_accuracy, cedar_accuracy
+    train_dataset, val_dataset = split_dataset(full_dataset, 0.8)
+    train_loader, val_loader = create_DataLoaders(train_dataset, val_dataset, batch_size=32)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
+    model = Cedar()
+    trained_cedar = train_model(model, train_loader, val_loader)
+    cedar_accuracy = test_model(trained_cedar, test_loader)
+
+    model = VGG16()
+    trained_vgg16 = train_model(model, train_loader, val_loader)
+    vgg16_accuracy = test_model(trained_vgg16, test_loader)
+
+    model = ResNet()
+    trained_resnet = train_model(model, train_loader, val_loader)
+    resnet_accuracy = test_model(trained_resnet, test_loader)
+
+    print(f"Cedar Accuracy: {cedar_accuracy}%")
+    print(f"VGG16 Accuracy: {vgg16_accuracy}%")
+    print(f"ResNet Accuracy: {resnet_accuracy}%")
 
 
 def test_model(model, test_loader):
     model.eval()
     correct = 0
     total = 0
+
     with torch.no_grad():
         for images, labels in test_loader:
             outputs = model(images)
@@ -45,10 +72,21 @@ def test_model(model, test_loader):
 
     accuracy = 100 * correct / total
     print(f"Test Accuracy: {accuracy}%")
+
     return accuracy
 
 
-def evaluate_model(model, data_loader):
+def model_tester(model):
+    test_dataset = TestDataset(root_dir="signatures")
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
+    model_accuracy = test_model(model, test_loader)
+
+
+def evaluate_model(model):
+    test_dataset = TestDataset(root_dir="signatures")
+    data_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
     model.eval()
     all_labels = []
     all_predictions = []
@@ -65,7 +103,7 @@ def evaluate_model(model, data_loader):
     recall = recall_score(all_labels, all_predictions)
     f1 = f1_score(all_labels, all_predictions)
     print(f"Accuracy: {accuracy}, Precision: {precision}, Recall: {recall}, F1 Score: {f1}")
-    return accuracy, precision, recall, f1
+
 
 # Porównaj z oryginalnym modelem:
 # modified_model = ModifiedCedarNetwork()

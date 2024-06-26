@@ -1,6 +1,6 @@
 from PIL import Image
 from torch.utils.data import DataLoader
-
+import torch.nn as nn
 from datasets import CedarDataset
 from networks import Cedar, VGG16, ResNet
 from train import train_model, split_dataset, create_DataLoaders, train_Cedar
@@ -8,7 +8,7 @@ import torch
 
 
 def main():
-    model = load_model()
+    model = load_model("Cedar")
     while True:
         print_options()
         option = input()
@@ -39,9 +39,16 @@ def print_options():
     print("0) Exit")
 
 
-def load_model() -> Cedar:
-    try:
+def load_model(model_type):
+    if model_type == "Cedar":
         model = Cedar()
+    elif model_type == "VGG16":
+        model = VGG16()
+    elif model_type == "ResNet":\
+        model = ResNet()
+    else:
+        raise ValueError("Wrong model type")
+    try:
         model.load_state_dict(torch.load("model_weights.pth"))
         return model
     except:
@@ -59,7 +66,6 @@ def test_signature(model: Cedar):
         print(f"Is given signature original: {output > 0.5} ({output * 100}%)")
     except:
         print(f"Cannot identify image file {image_path}")
-
 
 
 if __name__ == "__main__":
