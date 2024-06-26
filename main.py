@@ -1,7 +1,9 @@
 from PIL import Image
+from torch.utils.data import DataLoader
+
 from cedar_dataset import CedarDataset
-from cedar_network import CedarNetwork
-from train import train
+from networks import Cedar, VGG16, ResNet
+from train import train_model, split_dataset, create_DataLoaders, train_Cedar
 import torch
 
 
@@ -12,17 +14,17 @@ def main():
         option = input()
         match option:
             case "1":
-                if model == None:
-                    print("No model exists - you need to train model")
-                else:
+                if model != None:
                     test_signature(model)
-            case "2":
-                model = train()
-            case "3":
-                if model == None:
-                    print("No model exists - cannot retrain")
                 else:
-                    model = train(model)
+                    print("No model exists - you need to train model")
+            case "2":
+                model = train_Cedar()
+            case "3":
+                if model != None:
+                    model = train_Cedar(model)
+                else:
+                    print("No model exists - cannot retrain")
             case "0":
                 break
             case _:
@@ -37,16 +39,16 @@ def print_options():
     print("0) Exit")
 
 
-def load_model() -> CedarNetwork:
+def load_model() -> Cedar:
     try:
-        model = CedarNetwork()
+        model = Cedar()
         model.load_state_dict(torch.load("model_weights.pth"))
         return model
     except:
         return None
 
 
-def test_signature(model: CedarNetwork):
+def test_signature(model: Cedar):
     print("Input image path to check:")
     image_path = input()
     try:
@@ -54,9 +56,10 @@ def test_signature(model: CedarNetwork):
         transform = CedarDataset.get_transform()
         model.eval()
         output = model(transform(image)).item()
-        print(f"Is given signature original: {output>0.5} ({output*100}%)")
+        print(f"Is given signature original: {output > 0.5} ({output * 100}%)")
     except:
         print(f"Cannot identify image file {image_path}")
+
 
 
 if __name__ == "__main__":
