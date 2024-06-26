@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from cedar_dataset import CedarDataset
+from datasets import CedarDataset
 from networks import Cedar, VGG16, ResNet
 from torch.utils.data import random_split, DataLoader
 
@@ -62,17 +62,16 @@ def split_dataset(dataset, split_ratio=0.8):
     return random_split(dataset, [train_size, test_size])
 
 
-def create_DataLoaders(train_dataset, val_dataset, test_dataset, batch_size):
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-    return train_loader, val_loader, test_loader
+def create_DataLoaders(train_dataset, val_dataset, batch_size):
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    return train_loader, val_loader
 
 
 def train_Cedar(model: Cedar = None) -> Cedar:
     full_dataset = CedarDataset(root_dir="signatures")
-    train_dataset, test_dataset = split_dataset(full_dataset, 0.8)
-    train_loader, val_loader, _ = create_DataLoaders(train_dataset, test_dataset, batch_size=32)
+    train_dataset, val_dataset = split_dataset(full_dataset, 0.8)
+    train_loader, val_loader = create_DataLoaders(train_dataset, val_dataset, batch_size=32)
 
     model = model if model is Cedar else Cedar()
     model = train_model(model, train_loader, val_loader)
@@ -82,8 +81,8 @@ def train_Cedar(model: Cedar = None) -> Cedar:
 
 def train_VGG16(model: VGG16 = None) -> VGG16:
     full_dataset = CedarDataset(root_dir="signatures")
-    train_dataset, test_dataset = split_dataset(full_dataset, 0.8)
-    train_loader, val_loader, _ = create_DataLoaders(train_dataset, test_dataset, batch_size=32)
+    train_dataset, val_dataset = split_dataset(full_dataset, 0.8)
+    train_loader, val_loader = create_DataLoaders(train_dataset, val_dataset, batch_size=32)
 
     model = model if model is VGG16 else VGG16()
     model = train_model(model, train_loader, val_loader)
@@ -93,8 +92,8 @@ def train_VGG16(model: VGG16 = None) -> VGG16:
 
 def train_ResNet(model: ResNet = None) -> ResNet:
     full_dataset = CedarDataset(root_dir="signatures")
-    train_dataset, test_dataset = split_dataset(full_dataset, 0.8)
-    train_loader, val_loader, _ = create_DataLoaders(train_dataset, test_dataset, batch_size=32)
+    train_dataset, val_dataset = split_dataset(full_dataset, 0.8)
+    train_loader, val_loader = create_DataLoaders(train_dataset, val_dataset, batch_size=32)
 
     model = model if model is ResNet else ResNet()
     model = train_model(model, train_loader, val_loader)
@@ -113,6 +112,9 @@ def train_ResNet(model: ResNet = None) -> ResNet:
 #         results[size] = accuracy
 #     return results
 #
+## Przykład użycia:
+# results = train_with_different_sizes(model, full_dataset)
+# print(results)
 #
 # def train_with_hyperparams(model, train_loader, val_loader, epochs_list, lr_list, batch_sizes):
 #     results = {}
@@ -127,3 +129,9 @@ def train_ResNet(model: ResNet = None) -> ResNet:
 #                 accuracy = test_model(trained_model, test_loader)
 #                 results[(epochs, lr, batch_size)] = accuracy
 #     return results
+## Przykład użycia:
+# epochs_list = [10, 20, 50]
+# lr_list = [0.01, 0.001, 0.0001]
+# batch_sizes = [16, 32, 64]
+# results = train_with_hyperparams(model, train_loader, val_loader, epochs_list, lr_list, batch_sizes)
+# print(results)

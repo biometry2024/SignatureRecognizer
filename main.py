@@ -1,7 +1,7 @@
 from PIL import Image
 from torch.utils.data import DataLoader
 
-from cedar_dataset import CedarDataset
+from datasets import CedarDataset
 from networks import Cedar, VGG16, ResNet
 from train import train_model, split_dataset, create_DataLoaders, train_Cedar
 import torch

@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import random_split, DataLoader
 from torchvision import transforms
-from cedar_dataset import CedarDataset
+from datasets import CedarDataset
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 
@@ -64,32 +64,8 @@ def evaluate_model(model, data_loader):
     precision = precision_score(all_labels, all_predictions)
     recall = recall_score(all_labels, all_predictions)
     f1 = f1_score(all_labels, all_predictions)
-
+    print(f"Accuracy: {accuracy}, Precision: {precision}, Recall: {recall}, F1 Score: {f1}")
     return accuracy, precision, recall, f1
-
-
-# Przykład użycia:
-# test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-# accuracy, precision, recall, f1 = evaluate_model(model, test_loader)
-# print(f"Accuracy: {accuracy}, Precision: {precision}, Recall: {recall}, F1 Score: {f1}")
-
-
-# Przykład:
-# train_dataset, test_dataset = split_dataset(full_dataset, 0.8)
-
-
-# Przykład użycia:
-# results = train_with_different_sizes(model, full_dataset)
-# print(results)
-
-
-# Przykład użycia:
-# epochs_list = [10, 20, 50]
-# lr_list = [0.01, 0.001, 0.0001]
-# batch_sizes = [16, 32, 64]
-# results = train_with_hyperparams(model, train_loader, val_loader, epochs_list, lr_list, batch_sizes)
-# print(results)
-
 
 # Porównaj z oryginalnym modelem:
 # modified_model = ModifiedCedarNetwork()
@@ -170,35 +146,6 @@ def error_analysis(model, data_loader):
 #     print(f"Label: {label}, Prediction: {prediction}")
 #     plt.imshow(img.permute(1, 2, 0).numpy(), cmap='gray')
 #     plt.show()
-
-# full_dataset = CedarDataset(root_dir="signatures")
-# train_size = int(0.8 * len(full_dataset))
-# val_size = len(full_dataset) - train_size
-# train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size])
-#
-# test_dataset = CedarDataset(root_dir="signatures/test")
-# test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-#
-# train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-# val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
-#
-# cedar_model = CedarNetwork()
-# cedar_model = train_model(cedar_model, train_loader, val_loader)
-# cedar_accuracy = test_model(cedar_model, test_loader)
-#
-# # VGG16
-# vgg16_model = VGG16Binary()
-# vgg16_model = train_model(vgg16_model, train_loader, val_loader)
-# vgg16_accuracy = test_model(vgg16_model, test_loader)
-#
-# # ResNet
-# resnet_model = ResNetBinary()
-# resnet_model = train_model(resnet_model, train_loader, val_loader)
-# resnet_accuracy = test_model(resnet_model, test_loader)
-#
-# print(f"CedarNetwork Accuracy: {cedar_accuracy}%")
-# print(f"VGG16 Accuracy: {vgg16_accuracy}%")
-# print(f"ResNet Accuracy: {resnet_accuracy}%")
 
 
 if __name__ == '__experiments__':

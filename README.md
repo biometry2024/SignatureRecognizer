@@ -4,12 +4,7 @@ Simple signature recognition system
 ### Projekt powinien zawierać: 
 - bazę danych własną (lub  jedną z udostępnioną w internecie) 
 
-Poza CEDARem możemy użyć GPDS do samego testowania pojedynczych podpisów
-
-https://www.kaggle.com/datasets/adeelajmal/gpds-1150
-- opis użytych algorytmów i utworzonego programu (własnego, z użyciem dostępnych bibliotek) 
-
-Trzeba dodać opis modelu
+- opis użytych algorytmów i utworzonego programu (własnego, z użyciem dostępnych bibliotek)
 
 - opis wykonanych eksperymentów  
 
