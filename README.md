@@ -4,12 +4,7 @@ Simple signature recognition system
 ### Projekt powinien zawierać: 
 - bazę danych własną (lub  jedną z udostępnioną w internecie) 
 
-Poza CEDARem możemy użyć GPDS do samego testowania pojedynczych podpisów
-
-https://www.kaggle.com/datasets/adeelajmal/gpds-1150
-- opis użytych algorytmów i utworzonego programu (własnego, z użyciem dostępnych bibliotek) 
-
-Trzeba dodać opis modelu
+- opis użytych algorytmów i utworzonego programu (własnego, z użyciem dostępnych bibliotek)
 
 - opis wykonanych eksperymentów  
 
@@ -74,5 +69,21 @@ Walidacja modelu:
 Po każdej epoce model jest oceniany na zestawie walidacyjnym. Obliczana jest strata walidacyjna oraz dokładność modelu. Na tej podstawie monitorowane jest działanie sieci, co pozwala na wczesne zatrzymanie treningu, jeśli dokładność osiągnie odpowiedni poziom lub jeśli nie ma poprawy przez określoną liczbę epok.
 
 ## Eksperymenty
+
+
+CEDAR
+Epoch 1/20, Loss: 0.7459750753460508, Val Loss: 0.6884136690812952, Accuracy: 0.9223484848484849, Precision: 0.9916666666666667, Recall: 0.8592057761732852, F1 Score: 0.9206963249516441, Elapsed Time: 28.606995820999146
+Epoch 2/20, Loss: 0.6796087731014598, Val Loss: 0.6329151356921476, Accuracy: 0.6117424242424242, Precision: 0.5967741935483871, Recall: 0.8014440433212996, F1 Score: 0.6841294298921418, Elapsed Time: 28.889320373535156
+Epoch 3/20, Loss: 0.5971536180286696, Val Loss: 0.5214245301835677, Accuracy: 0.7234848484848485, Precision: 0.7027863777089783, Recall: 0.8194945848375451, F1 Score: 0.7566666666666667, Elapsed Time: 28.399161100387573
+Epoch 4/20, Loss: 0.618424812501127, Val Loss: 0.4859549631090725, Accuracy: 0.8522727272727273, Precision: 0.9853658536585366, Recall: 0.7292418772563177, F1 Score: 0.8381742738589212, Elapsed Time: 28.30045247077942
+Epoch 5/20, Loss: 0.26383901658383285, Val Loss: 0.03750317565658513, Accuracy: 0.9962121212121212, Precision: 1.0, Recall: 0.9927797833935018, F1 Score: 0.9963768115942029, Elapsed Time: 28.669886827468872
+Epoch 6/20, Loss: 0.16031875482065405, Val Loss: 0.017358707537984148, Accuracy: 1.0, Precision: 1.0, Recall: 1.0, F1 Score: 1.0, Elapsed Time: 28.93173837661743
+Epoch 7/20, Loss: 0.004495310996196967, Val Loss: 0.0007762849683572046, Accuracy: 1.0, Precision: 1.0, Recall: 1.0, F1 Score: 1.0, Elapsed Time: 28.524136543273926
+
+RESNET
+Epoch 1/20, Loss: 0.045614429219505946, Val Loss: 0.6690967416062075, Accuracy: 0.7916666666666666, Precision: 0.7215189873417721, Recall: 1.0, F1 Score: 0.8382352941176471
+Epoch 2/20, Loss: 0.007402830922342908, Val Loss: 0.06789086359169554, Accuracy: 0.9696969696969697, Precision: 1.0, Recall: 0.9438596491228071, F1 Score: 0.9711191335740073
+Epoch 3/20, Loss: 0.00424626990460445, Val Loss: 0.007048115004127955, Accuracy: 0.9981060606060606, Precision: 1.0, Recall: 0.9964912280701754, F1 Score: 0.9982425307557118
+Epoch 4/20, Loss: 0.000994741135262743, Val Loss: 0.00013966734075117581, Accuracy: 1.0, Precision: 1.0, Recall: 1.0, F1 Score: 1.0
 
 ## Wnioski
