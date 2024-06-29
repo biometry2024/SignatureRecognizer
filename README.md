@@ -70,8 +70,29 @@ Po każdej epoce model jest oceniany na zestawie walidacyjnym. Obliczana jest st
 
 ## Eksperymenty
 
+W celu sprawdzenia przygotowanej sieci, przeprowadzono kilka eksperymentów, część z nich są podstawowymi funkcjami programu, np. sprawdzenie wiarygodności podpisu a inne to dodatkowe badania przeprowadzone w pliku experiments.py.
 
-CEDAR
+Eksperymenty:
+ - Przetrenowanie sieci na różnych parametrach
+ - Ponowne przetrenowanie sieci
+ - Sprawdzenie wiarygodności podpisu podanego przez użytkownika
+ - Porównanie między różnymi sieciami
+
+
+### Porównanie między różnymi sieciami
+
+Do porównania wykorzystano własny stworzony model - Cedar oraz dwa inne popularne modele znajudjące się w bibliotece PyTorch: ResNet i VGG16.
+Parametry znajdujące się w tabelach:
+ - Epoch - Numer epoki treningowej. Jest to jedno pełne przejście przez cały zbiór treningowy.
+ - Loss - Wartość funkcji straty na zbiorze treningowym. Mniejsza wartość oznacza lepsze dopasowanie do danych treningowych.
+ - Val Loss - Wartość funkcji straty na zbiorze walidacyjnym. Miara jak dobrze model generalizuje do nowych, niewidzanych danych.
+ - Accuracy - Precyzja modelu. Odsetek prawdziwie pozytywnych przewidywań spośród wszystkich pozytywnych przewidywań.
+ - Recall - Czułość modelu, czyli odsetek prawdziwie pozytywnych przewidywań spośród wszystkich rzeczywistych pozytywnych przypadków.
+ - F1 Score - Średnia harmoniczna precyzji i czułości, używana do oceny modelu, zwłaszcza przy niezrównoważonych klasach.
+ - Elapsed Time - Czas, jaki zajęła jedna epoka treningowa (w sekundach).
+Poniżej znajdują się tabele wraz z wartościami przy trenowaniu sieci. 
+
+#### Cedar
 | Epoch | Loss                 | Val Loss              | Accuracy           | Precision          | Recall             | F1 Score           | Elapsed Time       |
 |-------|----------------------|-----------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
 | 1     | 0.7459750753460508   | 0.6884136690812952    | 0.9223484848484849 | 0.9916666666666667 | 0.8592057761732852 | 0.9206963249516441 | 28.606995820999146 |
@@ -82,7 +103,7 @@ CEDAR
 | 6     | 0.16031875482065405  | 0.017358707537984148  | 1.0                | 1.0                | 1.0                | 1.0                | 28.93173837661743  |
 | 7     | 0.004495310996196967 | 0.0007762849683572046 | 1.0                | 1.0                | 1.0                | 1.0                | 28.524136543273926 |
 
-RESNET
+#### ResNet
 | Epoch | Loss                 | Val Loss               | Accuracy           | Precision          | Recall             | F1 Score           | Elapsed Time       |
 |-------|----------------------|------------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
 | 1     | 0.045614429219505946 | 0.6690967416062075     | 0.7916666666666666 | 0.7215189873417721 | 1.0                | 0.8382352941176471 | 47.574694871902466 |
@@ -91,7 +112,7 @@ RESNET
 | 4     | 0.000994741135262743 | 0.00013966734075117581 | 1.0                | 1.0                | 0.0                | 1.0                | 47.76256608963013  |
 
 
-VGG16
+#### VGG16
 | Epoch | Loss               | Val Loss           | Accuracy | Precision | Recall | F1 Score           | Elapsed Time       |
 |-------|--------------------|--------------------|----------|-----------|--------|--------------------|--------------------|
 | 1     | 0.7993745903174082 | 0.6956436002955717 | 0.5      | 0.0       | 0.0    | 0.0                | 319.53003191947937 |
@@ -100,3 +121,7 @@ VGG16
 | 4     | 0.695623517036438  | 0.6984934982131509 | 0.5      | 0.0       | 0.0    | 0.0                | 301.6934518814087  |
 
 ## Wnioski
+
+Stworzony program a zarazem sieć do rozpoznawania podpisu działa i daje świetne wyniki dla podpisów z podanej bazy. Przekazując zdjęcie z bazy treningowej model ma problemy z odróżnieniem prawdziwego od fałszywego. W znacznej części wypadków oznacza negatywnie podpis niezależnie czy to prawdziwy czy podrobiony.
+Sama sieć nie jest duża, co również można powiedzieć o zbiorze treningowym. Sam zbiór to tylko 55 różnych autorów, a sieć składa się z czterech warstw. 
+Jednakże porównując sieć do innych można zauważyć, że cedar jest szybszy i osiąga wysoką dokładność, precyzję i czułość. Dopracowując sieć i budując większy zbiór danych, istnieje możliwość stworzenia świetnego i szybkiego modelu rozczytywania podpisów.
