@@ -13,7 +13,7 @@ def train_model(model, train_loader, val_loader, file_name="model.pth", num_epoc
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     lowest_val_loss = float("inf")
-    patience = 2
+    patience = 3
     epochs_without_improvement = 0
 
     accuracy = 0
@@ -60,17 +60,17 @@ def train_model(model, train_loader, val_loader, file_name="model.pth", num_epoc
 
         torch.save(model.state_dict(), file_name)
 
-        if accuracy >= 0.999:
-            print("Early stopping triggered")
-            break
+        if accuracy >= 0.996:
+            epochs_without_improvement += 1
         elif val_loss < lowest_val_loss:
             lowest_val_loss = val_loss
             epochs_without_improvement = 0
         else:
             epochs_without_improvement += 1
-            if epochs_without_improvement >= patience:
-                print("Early stopping")
-                break
+
+        if epochs_without_improvement >= patience:
+            print("Early stopping")
+            break
 
     return model, accuracy, precision, recall, f1
 
