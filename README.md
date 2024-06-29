@@ -70,4 +70,10 @@ Po każdej epoce model jest oceniany na zestawie walidacyjnym. Obliczana jest st
 
 ## Eksperymenty
 
+RESNET
+Epoch 1/20, Loss: 0.045614429219505946, Val Loss: 0.6690967416062075, Accuracy: 0.7916666666666666, Precision: 0.7215189873417721, Recall: 1.0, F1 Score: 0.8382352941176471
+Epoch 2/20, Loss: 0.007402830922342908, Val Loss: 0.06789086359169554, Accuracy: 0.9696969696969697, Precision: 1.0, Recall: 0.9438596491228071, F1 Score: 0.9711191335740073
+Epoch 3/20, Loss: 0.00424626990460445, Val Loss: 0.007048115004127955, Accuracy: 0.9981060606060606, Precision: 1.0, Recall: 0.9964912280701754, F1 Score: 0.9982425307557118
+Epoch 4/20, Loss: 0.000994741135262743, Val Loss: 0.00013966734075117581, Accuracy: 1.0, Precision: 1.0, Recall: 1.0, F1 Score: 1.0
+
 ## Wnioski

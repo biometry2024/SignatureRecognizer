@@ -1,20 +1,28 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
 from datasets import CedarDataset
 from networks import Cedar, VGG16, ResNet
 from torch.utils.data import random_split, DataLoader
+import numpy as np
+from sklearn.metrics import precision_score, recall_score, f1_score
+import time
 
 
-def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.001):
+def train_model(model, train_loader, val_loader, file_name="model.pth", num_epochs=20, learning_rate=0.001):
     criterion = nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
-    best_val_loss = float("inf")
+    lowest_val_loss = float("inf")
     patience = 2
     epochs_without_improvement = 0
 
+    accuracy = 0
+    precision = 0
+    recall = 0
+    f1 = 0
+
     for epoch in range(num_epochs):
+        start_time = time.time()
         model.train()
         running_loss = 0.0
         for images, labels in train_loader:
@@ -27,33 +35,44 @@ def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.
 
         model.eval()
         val_loss = 0.0
-        correct = 0
-        total = 0
+        y_predicted = []
+        y_real = []
+
         with torch.no_grad():
             for images, labels in val_loader:
                 outputs = model(images)
                 loss = criterion(outputs.squeeze(), labels)
                 val_loss += loss.item()
                 predicted = (outputs.squeeze() > 0.5).float()
-                total += labels.size(0)
-                correct += (predicted == labels).sum().item()
+                y_predicted.extend(predicted)
+                y_real.extend(labels)
 
-        accuracy = 100 * correct / total
+        accuracy = np.mean(np.array(y_predicted) == np.array(y_real))
+        precision = precision_score(y_real, y_predicted)
+        recall = recall_score(y_real, y_predicted)
+        f1 = f1_score(y_real, y_predicted)
+
+        time_elapsed = time.time() - start_time
+
         print(
-            f"Epoch {epoch + 1}/{num_epochs}, Loss: {running_loss / len(train_loader)}, Val Loss: {val_loss / len(val_loader)}, Accuracy: {accuracy}%")
+            f"Epoch {epoch + 1}/{num_epochs}, Loss: {running_loss / len(train_loader)}, Val Loss: {val_loss / len(val_loader)}, "
+            f"Accuracy: {accuracy}, Precision: {precision}, Recall: {recall}, F1 Score: {f1}, Elapsed Time: {time_elapsed}")
 
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
+        torch.save(model.state_dict(), file_name)
+
+        if accuracy >= 0.999:
+            print("Early stopping triggered")
+            break
+        elif val_loss < lowest_val_loss:
+            lowest_val_loss = val_loss
             epochs_without_improvement = 0
-            torch.save(model.state_dict(), 'best_model.pth')
         else:
             epochs_without_improvement += 1
             if epochs_without_improvement >= patience:
                 print("Early stopping")
                 break
 
-    model.load_state_dict(torch.load('best_model.pth'))
-    return model
+    return model, accuracy, precision, recall, f1
 
 
 def split_dataset(dataset, split_ratio=0.8):
@@ -74,7 +93,7 @@ def train_Cedar(model: Cedar = None) -> Cedar:
     train_loader, val_loader = create_DataLoaders(train_dataset, val_dataset, batch_size=32)
 
     model = model if model is Cedar else Cedar()
-    model = train_model(model, train_loader, val_loader)
+    model, accuracy, precision, recall, f1 = train_model(model, train_loader, val_loader)
 
     return model
 

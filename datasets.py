@@ -7,7 +7,6 @@ import os
 
 class NetworkDataset(Dataset):
     def __init__(self, root_dir):
-        super().__init__(self, root_dir)
         self.root_dir = root_dir
         self.transform = self.get_transform()
         self.image_paths = []
@@ -44,6 +43,7 @@ class NetworkDataset(Dataset):
             [transforms.Resize((150, 220)), transforms.ToTensor()]
         )
 
+
 class CedarDataset(NetworkDataset):
     def __init__(self, root_dir):
         super().__init__(self)
@@ -62,6 +62,7 @@ class CedarDataset(NetworkDataset):
             if self.is_image_file(file_path):
                 self.image_paths.append(file_path)
                 self.labels.append(0)
+
 
 class TestDataset(NetworkDataset):
     def __init__(self, root_dir):
