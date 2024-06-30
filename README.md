@@ -1,16 +1,6 @@
-# System Rozpoznawania Podpisu
-Simple signature recognition system
+# SignatureRecognizer - System Rozpoznawania Podpisu
 
-### Projekt powinien zawierać: 
-- bazę danych własną (lub  jedną z udostępnioną w internecie) 
-
-- opis użytych algorytmów i utworzonego programu (własnego, z użyciem dostępnych bibliotek)
-
-- opis wykonanych eksperymentów  
-
-TODO: wymyślić proste eksperymenty - pomysły: Sampled Hyperparameter Tuning (czyli na subsecie danych), wytrenowanie gotowego modelu i porównanie z naszym (np. VGG16, ResNet)
-
-- wnioski 
+Autorzy: Jakub Bochenek, Adam Walka, Konrad Micek
 
 ## Baza danych
 
@@ -18,23 +8,14 @@ Do wytrenowania sieci skorzystano z bazy danych znajdującej się na kaggle`u:
 https://www.kaggle.com/datasets/shreelakshmigp/cedardataset/data
 
 W zbiorze danych znajdują się dwa foldery:
- - full_forg 
- - full_org 
+ - full_forg - sfałszowane podpisy,
+ - full_org - prawdziwe podpisy.
 
 Każdy z nich posiada po 1320 zdjęć podpisów o różnych rozmiarach w kształcie prostokąta.
 Na te 1320 zdjęć składają się po 24 podpisy, 55 różnych autorów.
 Pierwszy folder (full_forg) zawiera w sobie podrobione podpisy natomiast drugi (full_org) to oryginalne zdjęcia podpisów.
 Rozmiary zdjęć z podpisami wahają się dla długości między 150 a 810 pikseli, a dla szerokości między 270 a 890 piskeli.
 
-Przy testowaniu wykorzystano również bazę danych z kaggle:
-https://www.kaggle.com/datasets/adeelajmal/gpds-1150
-
-W tym przypadku zbiór danych składa się z dwóch podfolderów:
- - test
- - train
-
-Pierwszy charakteryzuje się 150 kolejnymi podfolderami. Każdy z nich posiada dwa foldery. Pierwszy z tych folderów to podrobione podpisy w ilości 14. Drugi to 8 zdjęć prawdziwych podpisów.
-Drugi to zbiorczy folder w którym dane podzielone są na foldery, fałszywe i prawdziwe podpisy. Obydwa posiadają po 2400 zdjęć.
 
 ## Opis algorytmów i programu
 
@@ -42,13 +23,16 @@ Algorytm analizy podpisów wykorzystujący sieć neuronową CedarNetwork opiera 
 
 ### Architektura sieci
 
-Warstwy konwolucyjne i pooling:
+#### Warstwy konwolucyjne i pooling
+
 Sieć składa się z trzech warstw konwolucyjnych, które są połączone z warstwami pooling. Warstwy konwolucyjne służą do wykrywania różnych cech obrazu, takich jak krawędzie, tekstury i wzory charakterystyczne dla podpisów.
 Warstwy pooling (max pooling) zmniejszają rozmiar danych, co pomaga w redukcji liczby parametrów i zapobiega przeuczeniu modelu.
 
-Warstwy w pełni połączone:
+#### Warstwy w pełni połączone
+
 Po przejściu przez warstwy konwolucyjne, dane są spłaszczane i przekazywane do dwóch w pełni połączonych warstw. Te warstwy działają jak klasyfikator, który na podstawie wyekstrahowanych cech podejmuje decyzję o przynależności obrazu do jednej z dwóch klas: prawdziwy lub fałszywy podpis.
-Funkcja aktywacji Sigmoid:
+
+#### Funkcja aktywacji Sigmoid
 
 Ostateczna warstwa sieci używa funkcji aktywacji Sigmoid, która przekształca wyjście sieci w wartość z przedziału [0, 1]. Dzięki temu sieć może interpretować wynik jako prawdopodobieństwo przynależności do klasy "prawdziwy podpis".
 
@@ -63,21 +47,19 @@ Inicjalizacja modelu:
 Na początku procesu treningu tworzymy instancję sieci CedarNetwork oraz definiujemy funkcję straty (Binary Cross-Entropy Loss) i optymalizator (Adam).
 
 Pętla treningowa:
-Model jest trenowany przez kilka epok, w każdej epoce przechodząc przez wszystkie próbki w zestawie treningowym. Dla każdej próbki obliczana jest strata, a wagi modelu są aktualizowane w celu minimalizacji tej straty za pomocą propagacji wstecznej.
+Model jest trenowany przez kilka epok, w każdej epoce przechodząc przez wszystkie próbki w zestawie treningowym. Dla każdej próbki obliczana jest strata, a wagi modelu są aktualizowane w celu minimalizacji tej straty za pomocą propagacji wstecznej. Zasotsowany zostął mechanizm wczesnego zakańczania treningu poprzez porównywanie celności oraz strat modelu w kolejnych epokach.
 
 Walidacja modelu:
 Po każdej epoce model jest oceniany na zestawie walidacyjnym. Obliczana jest strata walidacyjna oraz dokładność modelu. Na tej podstawie monitorowane jest działanie sieci, co pozwala na wczesne zatrzymanie treningu, jeśli dokładność osiągnie odpowiedni poziom lub jeśli nie ma poprawy przez określoną liczbę epok.
 
+### Funkcje programu
+
+Program pozwala na:
+- sprawdzenie oryginalności pojedynczego podpisu poprzez podanie pełnej ścieżki do zdjęcia,
+- wytrenowanie modelu na nowo,
+- dotrenowanie wytrenowanego już modelu.
+
 ## Eksperymenty
-
-W celu sprawdzenia przygotowanej sieci, przeprowadzono kilka eksperymentów, część z nich są podstawowymi funkcjami programu, np. sprawdzenie wiarygodności podpisu a inne to dodatkowe badania przeprowadzone w pliku experiments.py.
-
-Eksperymenty:
- - Przetrenowanie sieci na różnych parametrach
- - Ponowne przetrenowanie sieci
- - Sprawdzenie wiarygodności podpisu podanego przez użytkownika
- - Porównanie między różnymi sieciami
-
 
 ### Porównanie między różnymi sieciami
 
@@ -90,7 +72,8 @@ Parametry znajdujące się w tabelach:
  - Recall - Czułość modelu, czyli odsetek prawdziwie pozytywnych przewidywań spośród wszystkich rzeczywistych pozytywnych przypadków.
  - F1 Score - Średnia harmoniczna precyzji i czułości, używana do oceny modelu, zwłaszcza przy niezrównoważonych klasach.
  - Elapsed Time - Czas, jaki zajęła jedna epoka treningowa (w sekundach).
-Poniżej znajdują się tabele wraz z wartościami przy trenowaniu sieci. 
+
+Wszystkie testy były wykonywane na CPU w wyniku braku dostępności GPU - wykorzystując GPU można by się spodziewać co najmniej kilkukrotnego skrócenia czasu treningu. Każdy model był trenowany na jednakowych parametrach. Poniżej znajdują się tabele wraz z wartościami przy trenowaniu sieci. 
 
 #### Cedar
 | Epoch | Loss                 | Val Loss              | Accuracy           | Precision          | Recall             | F1 Score           | Elapsed Time       |
@@ -103,7 +86,7 @@ Poniżej znajdują się tabele wraz z wartościami przy trenowaniu sieci.
 | 6     | 0.16031875482065405  | 0.017358707537984148  | 1.0                | 1.0                | 1.0                | 1.0                | 28.93173837661743  |
 | 7     | 0.004495310996196967 | 0.0007762849683572046 | 1.0                | 1.0                | 1.0                | 1.0                | 28.524136543273926 |
 
-#### ResNet
+#### ResNet18
 | Epoch | Loss                 | Val Loss               | Accuracy           | Precision          | Recall             | F1 Score           | Elapsed Time       |
 |-------|----------------------|------------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
 | 1     | 0.045614429219505946 | 0.6690967416062075     | 0.7916666666666666 | 0.7215189873417721 | 1.0                | 0.8382352941176471 | 47.574694871902466 |
@@ -120,8 +103,78 @@ Poniżej znajdują się tabele wraz z wartościami przy trenowaniu sieci.
 | 3     | 0.6935828716465922 | 0.698022632037892  | 0.5      | 0.5       | 1.0    | 0.6666666666666666 | 351.940541267395   |
 | 4     | 0.695623517036438  | 0.6984934982131509 | 0.5      | 0.0       | 0.0    | 0.0                | 301.6934518814087  |
 
-## Wnioski
+#### Wnioski
 
-Stworzony program a zarazem sieć do rozpoznawania podpisu działa i daje świetne wyniki dla podpisów z podanej bazy. Przekazując zdjęcie z bazy treningowej model ma problemy z odróżnieniem prawdziwego od fałszywego. W znacznej części wypadków oznacza negatywnie podpis niezależnie czy to prawdziwy czy podrobiony.
-Sama sieć nie jest duża, co również można powiedzieć o zbiorze treningowym. Sam zbiór to tylko 55 różnych autorów, a sieć składa się z czterech warstw. 
-Jednakże porównując sieć do innych można zauważyć, że cedar jest szybszy i osiąga wysoką dokładność, precyzję i czułość. Dopracowując sieć i budując większy zbiór danych, istnieje możliwość stworzenia świetnego i szybkiego modelu rozczytywania podpisów.
+VGG16 zupełnie nie poradził sobie z zestawem Cedar. Przez 4 iteracje zbioru danych jego wydajność nie zmieniała się, do tego każdy okres trwał bardzo długo w porównaniu z innymi modelami.
+
+ResNet18 uzyskał bardzo dobre wyniki. Osiągnął świetną celność już po 4 epokach, a ich czas trwania był dosyć krótki.
+
+Autorski model ze względu na mniejszą ilość warstw w porównaniu z pozostałymi modelami miał najkrótszy czas epoki, jednak do osiągnięcia bardzo dobrych wyników potrzebował 5-6 epok. Trzeba jednak przyznać, że pomimo swojej prostoty model oferuje bardzo dobre parametry i dla wybranego zbioru danych jest konkurencyjny z modelem ResNet.
+
+### Kilkukrotne przetrenowanie autorskiej sieci
+
+Test był wykonywany na innym, słabszym sprzętowo komputerze niż powyższe testy, stąd znacznie dłuższy czas ich wykonania.
+
+#### Trening 1
+
+| Epoch | Loss                 | Val Loss              | Accuracy           | Precision          | Recall             | F1 Score           | Elapsed Time       |
+|-------|----------------------|-----------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
+| 1     | 0.7294277593945012   | 0.6915848079849692    | 0.5018939393939394 | 0.5018939393939394 | 1.0                | 0.6683480453972258 | 110.62269949913025 |
+| 2     | 0.6918990846836206   | 0.693884551525116     | 0.4981060606060606 | 0.0                | 0.0                | 0.0                | 102.78726029396057 |
+| 3     | 0.6105143091443813   | 0.4341328056419597    | 0.75               | 0.6675062972292192 | 1.0                | 0.8006042296072508 | 113.45713138580322 |
+| 4     | 0.2847223316008846   | 0.005021942868445288  | 1.0                | 1.0                | 1.0                | 1.0                | 123.36775755882263 |
+| 5     | 0.3310140148757703   | 0.013874418923960012  | 1.0                | 1.0                | 1.0                | 1.0                | 126.78728365898132 |
+| 6     | 0.006319532081816402 | 0.0016084651544909267 | 1.0                | 1.0                | 1.0                | 1.0                | 142.45789504051208 |
+
+
+#### Trening 2
+
+| Epoch | Loss                 | Val Loss              | Accuracy           | Precision          | Recall             | F1 Score           | Elapsed Time       |
+|-------|----------------------|-----------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
+| 1     | 0.7115344459360297   | 0.6769058318699107    | 0.5037878787878788 | 0.0                | 0.0                | 0.0                | 145.56020331382751 |
+| 2     | 0.6711439824465549   | 0.5698645500575795    | 0.4962121212121212 | 0.4962121212121212 | 1.0                | 0.6632911392405064 | 111.97881960868835 |
+| 3     | 0.20190343504884478  | 0.048907082747010625  | 0.9867424242424242 | 0.9739776951672863 | 1.0                | 0.9868173258003766 | 118.71889305114746 |
+| 4     | 0.23747497914838744  | 0.16690007641034968   | 0.9375             | 0.888135593220339  | 1.0                | 0.940754039497307  | 127.79018807411194 |
+| 5     | 0.026731101640810568 | 0.0108984291608281    | 1.0                | 1.0                | 1.0                | 1.0                | 137.84848761558533 |
+| 6     | 0.010570581191021836 | 0.0036667491761310134 | 1.0                | 1.0                | 1.0                | 1.0                | 113.51597213745117 |
+
+
+#### Trening 3
+
+| Epoch | Loss                 | Val Loss              | Accuracy           | Precision          | Recall             | F1 Score           | Elapsed Time       |
+|-------|----------------------|-----------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
+| 1     | 0.7093636890252432   | 0.6814743070041432    | 0.5056818181818182 | 0.0                | 0.0                | 0.0                | 134.0037121772766  |
+| 2     | 0.5835249392372189   | 0.39906858083079844   | 0.7973484848484849 | 0.7092391304347826 | 1.0                | 0.8298887122416534 | 120.74614024162292 |
+| 3     | 0.3004613954037654   | 0.01017524371854961   | 1.0                | 1.0                | 1.0                | 1.0                | 145.8005096912384  |
+| 4     | 0.003760965242470389 | 0.002594727485676926  | 1.0                | 1.0                | 1.0                | 1.0                | 151.7447738647461  |
+| 5     | 0.21126053923261212  | 0.011324645403553458  | 1.0                | 1.0                | 1.0                | 1.0                | 137.94452929496765 |
+
+
+#### Wnioski
+
+Początkowy słaby start:
+
+W każdej serii treningowej model zaczyna z niską dokładnością (ok. 50%) i wysokimi wartościami Loss i Val Loss w pierwszej epoce.
+Brak precyzji i wartości Recall na poziomie 0 w pierwszej epoce w niektórych przypadkach wskazuje na problemy z klasyfikacją na starcie.
+
+Znacząca poprawa w kolejnych epokach:
+
+W kolejnych epokach model szybko poprawia swoje wyniki, osiągając wysoką dokładność, precyzję, Recall i F1 Score.
+Już w 3. epoce wartości te są znacznie lepsze, a Val Loss mocno spada, wskazując na poprawę klasyfikacji.
+
+Stabilna wysoka wydajność:
+
+Po 4. epoce model osiąga maksymalną dokładność, precyzję, Recall i F1 Score wynoszącą 1.0, co wskazuje na idealną klasyfikację.
+Loss i Val Loss również spadają do bardzo niskich wartości, co wskazuje na dobrą generalizację modelu.
+
+Czas treningu:
+
+Czas treningu rośnie wraz z każdą epoką, co może być związane ze zwiększoną ilością danych do przetworzenia i bardziej skomplikowanymi obliczeniami.
+
+Model wykazuje zdolność szybkiego uczenia się i osiągania wysokiej wydajności już w pierwszych kilku epokach. Początkowe trudności z klasyfikacją są szybko pokonywane, a model stabilnie utrzymuje wysoką dokładność i jakość klasyfikacji. Jest to pozytywny sygnał, sugerujący, że model pomimo swojej prostoty jest dobrze dostosowany do danych i ma zdolność do generalizacji.
+
+## Podsumowanie
+
+Stworzony program będący siecią neuronową służącą do rozpoznawania oryginalności podpisu działa i daje świetne wyniki dla podpisów z podanej bazy pomimo prostoty budowy sieci. Sama sieć nie jest duża, co również można powiedzieć o zbiorze treningowym. Sam zbiór to tylko 55 różnych autorów, a sieć składa się z czterech warstw. 
+
+Jednakże porównując sieć do innych, gotowych modeli można zauważyć, że autorska sieć jest szybsza, a mimo to osiąga wysoką dokładność i precyzję. Rozbudowjąc sieć i gromadząc większy zbiór danych, istnieje możliwość stworzenia dokładnego i szybkiego modelu rozpoznawania oryginalności podpisów.
